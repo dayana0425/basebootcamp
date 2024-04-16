@@ -1,30 +1,32 @@
-// Structs Exercise
-
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.2 <0.9.0;
 
 contract GarageManager {
 
     struct Car {
-        uint8 numberOfDoors; 
         string make;
         string model;
-        string color;    
+        string color;  
+        uint256 numberOfDoors; 
     }
 
     mapping(address => Car[]) public garage;
 
-    function addCar(string memory make, string memory model, string memory color, uint8 numberOfDoors) public {
-        Car memory newCar = Car(numberOfDoors, make, model, color); 
+    function addCar(string memory make, string memory model, string memory color, uint256 numberOfDoors) external {
+        Car memory newCar = Car(make, model, color, numberOfDoors); 
         garage[msg.sender].push(newCar);
     }
 
-    function getMyCars() public view returns (Car[] memory) {
+    function getMyCars() external view returns (Car[] memory) {
         return garage[msg.sender];
     }
 
-    error BadCarIndex(uint index);
-    function updateCar(uint index, string memory make, string memory model, string memory color, uint8 numberOfDoors) public {
+    function getUserCars(address addr) external view returns (Car[] memory) {
+        return garage[addr];
+    }
+
+    error BadCarIndex(uint256 index);
+    function updateCar(uint256 index, string memory make, string memory model, string memory color, uint256 numberOfDoors) external {
         Car[] storage myCars = garage[msg.sender];
         if (index >= myCars.length) {
             revert BadCarIndex(index);
@@ -33,7 +35,7 @@ contract GarageManager {
         myCars[index] = Car(make, model, color, numberOfDoors);
     }
 
-    function resetMyGarage() public {
+    function resetMyGarage() external {
         delete garage[msg.sender];
     }
 }
