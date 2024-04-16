@@ -19,7 +19,7 @@ contract Salaried is Employee {
  
     constructor(uint256 id, uint256 manager, uint256 salary) 
     Employee(id, manager) {
-        idNumber = id;
+        annualSalary = salary;
     }
     
     function getAnnualCost() public override returns(uint256) {
