@@ -1,40 +1,30 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.17;
 
 contract UnburnableToken {
-
-    mapping(address => uint256) public balances;
-    mapping(address => bool) public hasClaimed;
-
-    uint256 public totalSupply;
-    uint256 public totalClaimed;
-
-    error AllTokensClaimed();
-    error TokensClaimed();
-    error UnsafeTransfer(address _addr);
-
+    mapping (address => uint) public balances;
+    uint public totalSupply;
+    uint public totalClaimed;
 
     constructor() {
-        totalSupply =  100_000_000;
+        totalSupply = 100000000;
     }
 
-    function claim() public {
-        if (totalClaimed == totalSupply) {
-            revert AllTokensClaimed();
-        }
-        if (hasClaimed[msg.sender]) {
-            revert TokensClaimed();
-        }
-        totalClaimed += 1_000;
-        balances[msg.sender] += 1_000;
-        hasClaimed[msg.sender] = true;
+    error TokensClaimed();
+    error AllTokensClaimed();
+    function claim() public {    
+        if (balances[msg.sender] > 0) revert TokensClaimed();
+        if (totalClaimed == totalSupply) revert AllTokensClaimed();
+
+        balances[msg.sender] = 1000;
+        totalClaimed += 1000;
     }
 
-    function safeTransfer(address _to, uint256 _amount) public {
-        if (_to == address(0) || _to.balance == 0) {
-            revert UnsafeTransfer(_to);
-        }
+    error UnsafeTransfer(address _to);
+    function safeTransfer(address _to, uint _amount) public {
+        if(_to == address(0) || _to.balance == 0) revert UnsafeTransfer(_to);
+        
         balances[msg.sender] -= _amount;
         balances[_to] += _amount;
     }
